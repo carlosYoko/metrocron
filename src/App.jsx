@@ -53,17 +53,11 @@ export default function App() {
           <span>metro<strong>cron</strong></span>
         </a>
         <div className="header-actions">
-          <p>Tu tiempo, a tempo.</p>
           <ThemeSwitcher preference={theme.preference} onChange={theme.setPreference} />
         </div>
       </header>
 
       <main id="top" className="workspace">
-        <div className="intro">
-          <span className="intro-line" />
-          <p>Afina tu enfoque. Marca tu ritmo.</p>
-          <span className="intro-line" />
-        </div>
         <div className="panels-grid">
           <TimerPanel timer={timer} onToggle={toggleTimer} onReset={resetTimer} />
           <MetronomePanel
