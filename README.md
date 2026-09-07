@@ -12,6 +12,7 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 - Cuatro sonidos sintetizados mediante Web Audio API.
 - Diseño responsive para escritorio y móvil.
 - Tema claro, oscuro o sincronizado con el dispositivo.
+- Cuenta atrás visible en el título de la pestaña durante la práctica.
 
 ## Desarrollo local
 

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MetronomePanel } from './components/MetronomePanel.jsx'
 import { TimerPanel } from './components/TimerPanel.jsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.jsx'
+import { useDocumentTitle } from './hooks/useDocumentTitle.js'
 import { useMetronome } from './hooks/useMetronome.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
@@ -9,6 +10,7 @@ import { useTimer } from './hooks/useTimer.js'
 export default function App() {
   const timer = useTimer()
   const theme = useTheme()
+  useDocumentTitle(timer)
   const [bpm, setBpm] = useState(84)
   const [beatsPerBar, setBeatsPerBar] = useState(4)
   const [soundId, setSoundId] = useState('classic')
