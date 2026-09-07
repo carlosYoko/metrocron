@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MetronomePanel } from './components/MetronomePanel.jsx'
 import { TimerPanel } from './components/TimerPanel.jsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.jsx'
@@ -16,7 +16,17 @@ export default function App() {
   const [soundId, setSoundId] = useState('classic')
   const [standalonePlaying, setStandalonePlaying] = useState(false)
   const metronomePlaying = timer.isRunning || standalonePlaying
-  const { currentBeat, prepareAudio } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId })
+  const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId })
+  const completionNotifiedRef = useRef(false)
+
+  useEffect(() => {
+    if (timer.status === 'finished' && !completionNotifiedRef.current) {
+      completionNotifiedRef.current = true
+      playCompletionAlarm()
+    } else if (timer.status !== 'finished') {
+      completionNotifiedRef.current = false
+    }
+  }, [playCompletionAlarm, timer.status])
 
   const toggleTimer = () => {
     prepareAudio()

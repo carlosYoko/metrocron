@@ -17,7 +17,33 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
       audioContextRef.current = new AudioContext()
     }
     if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume()
+    return audioContextRef.current
   }, [])
+
+  const playCompletionAlarm = useCallback(() => {
+    const context = prepareAudio()
+    const startTime = context.currentTime + 0.04
+    const notes = [
+      { frequency: 659.25, offset: 0, duration: 0.3 },
+      { frequency: 783.99, offset: 0.3, duration: 0.3 },
+      { frequency: 1046.5, offset: 0.6, duration: 0.65 },
+    ]
+
+    notes.forEach(({ frequency, offset, duration }) => {
+      const noteStart = startTime + offset
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(frequency, noteStart)
+      gain.gain.setValueAtTime(0.0001, noteStart)
+      gain.gain.exponentialRampToValueAtTime(0.24, noteStart + 0.025)
+      gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration)
+      oscillator.connect(gain)
+      gain.connect(context.destination)
+      oscillator.start(noteStart)
+      oscillator.stop(noteStart + duration)
+    })
+  }, [prepareAudio])
 
   useEffect(() => {
     if (!playing) {
@@ -67,5 +93,5 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
     }
   }, [beatsPerBar, bpm, playing, prepareAudio, soundId])
 
-  return { currentBeat, prepareAudio }
+  return { currentBeat, prepareAudio, playCompletionAlarm }
 }
