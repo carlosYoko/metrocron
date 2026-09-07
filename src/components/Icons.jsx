@@ -21,3 +21,15 @@ export function MinusIcon() {
 export function PlusIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" /></svg>
 }
+
+export function SunIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v3h-2V2Zm0 17h2v3h-2v-3ZM4.22 5.64l1.42-1.42 2.12 2.12-1.42 1.42-2.12-2.12Zm12.02 12.02 1.42-1.42 2.12 2.12-1.42 1.42-2.12-2.12ZM2 11h3v2H2v-2Zm17 0h3v2h-3v-2ZM4.22 18.36l2.12-2.12 1.42 1.42-2.12 2.12-1.42-1.42ZM16.24 6.34l2.12-2.12 1.42 1.42-2.12 2.12-1.42-1.42ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" /></svg>
+}
+
+export function MoonIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.5A8.6 8.6 0 0 1 8.5 3.6 9 9 0 1 0 20.4 15.5ZM5 12a7 7 0 0 1 .67-3A10.6 10.6 0 0 0 15 18.33 7 7 0 0 1 5 12Z" /></svg>
+}
+
+export function SystemIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v13H3V4Zm2 2v9h14V6H5Zm4 13h6v2H9v-2Z" /></svg>
+}

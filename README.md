@@ -11,6 +11,7 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 - Compases de 3/4, 4/4 y 6/4 con acento visual y sonoro.
 - Cuatro sonidos sintetizados mediante Web Audio API.
 - Diseño responsive para escritorio y móvil.
+- Tema claro, oscuro o sincronizado con el dispositivo.
 
 ## Desarrollo local
 

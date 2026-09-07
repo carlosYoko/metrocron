@@ -8,6 +8,16 @@
       name="description"
       content="Temporizador y metrónomo para sesiones de práctica musical."
     />
+    <script>
+      (() => {
+        const saved = localStorage.getItem('metrocron-theme')
+        const preference = ['light', 'dark', 'system'].includes(saved) ? saved : 'system'
+        const systemTheme = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        const theme = preference === 'system' ? systemTheme : preference
+        document.documentElement.dataset.theme = theme
+        document.documentElement.style.colorScheme = theme
+      })()
+    </script>
     <title>Metrocron — Tu tiempo, a tempo</title>
   </head>
   <body>

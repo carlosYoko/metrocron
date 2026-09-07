@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { MetronomePanel } from './components/MetronomePanel.jsx'
 import { TimerPanel } from './components/TimerPanel.jsx'
+import { ThemeSwitcher } from './components/ThemeSwitcher.jsx'
 import { useMetronome } from './hooks/useMetronome.js'
+import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
 export default function App() {
   const timer = useTimer()
+  const theme = useTheme()
   const [bpm, setBpm] = useState(84)
   const [beatsPerBar, setBeatsPerBar] = useState(4)
   const [soundId, setSoundId] = useState('classic')
@@ -37,7 +40,10 @@ export default function App() {
           <span className="brand-icon"><span /><span /><span /><span /></span>
           <span>metro<strong>cron</strong></span>
         </a>
-        <p>Tu tiempo, a tempo.</p>
+        <div className="header-actions">
+          <p>Tu tiempo, a tempo.</p>
+          <ThemeSwitcher preference={theme.preference} onChange={theme.setPreference} />
+        </div>
       </header>
 
       <main id="top" className="workspace">
