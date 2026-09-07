@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
-export function useTimer(initialSeconds = 3 * 60) {
+export function useTimer(initialSeconds = 3 * 60, onDurationChange) {
   const [duration, setDuration] = useState(initialSeconds)
   const [remaining, setRemaining] = useState(initialSeconds)
   const [status, setStatus] = useState('idle')
@@ -48,9 +48,10 @@ export function useTimer(initialSeconds = 3 * 60) {
     const nextSeconds = clamp(Number(seconds) || 0, 0, 59)
     const total = nextMinutes * 60 + nextSeconds
     setDuration(total)
+    onDurationChange?.(total)
     setRemaining(total)
     setStatus('idle')
-  }, [])
+  }, [onDurationChange])
 
   return {
     duration,

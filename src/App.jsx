@@ -4,16 +4,16 @@ import { TimerPanel } from './components/TimerPanel.jsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.jsx'
 import { useDocumentTitle } from './hooks/useDocumentTitle.js'
 import { useMetronome } from './hooks/useMetronome.js'
+import { usePracticeSettings } from './hooks/usePracticeSettings.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
 export default function App() {
-  const timer = useTimer()
+  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId } = usePracticeSettings()
+  const timer = useTimer(settings.duration, setDuration)
   const theme = useTheme()
   useDocumentTitle(timer)
-  const [bpm, setBpm] = useState(84)
-  const [beatsPerBar, setBeatsPerBar] = useState(4)
-  const [soundId, setSoundId] = useState('classic')
+  const { bpm, beatsPerBar, soundId } = settings
   const [standalonePlaying, setStandalonePlaying] = useState(false)
   const metronomePlaying = timer.isRunning || standalonePlaying
   const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId })
