@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS = {
   beatsPerBar: 4,
   soundId: 'classic',
   volume: 100,
+  accentFirstBeat: true,
 }
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
@@ -20,6 +21,7 @@ const sanitizeSetting = (key, value) => {
   if (key === 'beatsPerBar') return TIME_SIGNATURES.includes(Number(value)) ? Number(value) : DEFAULT_SETTINGS.beatsPerBar
   if (key === 'soundId') return soundIds.has(value) ? value : DEFAULT_SETTINGS.soundId
   if (key === 'volume') return clamp(Math.round(Number(value) || 0), 0, 100)
+  if (key === 'accentFirstBeat') return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.accentFirstBeat
   return value
 }
 
@@ -59,6 +61,7 @@ export function usePracticeSettings() {
   const setBeatsPerBar = useCallback((value) => updateSetting('beatsPerBar', value), [updateSetting])
   const setSoundId = useCallback((value) => updateSetting('soundId', value), [updateSetting])
   const setVolume = useCallback((value) => updateSetting('volume', value), [updateSetting])
+  const setAccentFirstBeat = useCallback((value) => updateSetting('accentFirstBeat', value), [updateSetting])
 
-  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume }
+  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat }
 }

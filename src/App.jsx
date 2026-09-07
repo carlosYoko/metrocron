@@ -9,14 +9,14 @@ import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
 export default function App() {
-  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume } = usePracticeSettings()
+  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat } = usePracticeSettings()
   const timer = useTimer(settings.duration, setDuration)
   const theme = useTheme()
   useDocumentTitle(timer)
-  const { bpm, beatsPerBar, soundId, volume } = settings
+  const { bpm, beatsPerBar, soundId, volume, accentFirstBeat } = settings
   const [standalonePlaying, setStandalonePlaying] = useState(false)
   const metronomePlaying = timer.isRunning || standalonePlaying
-  const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume })
+  const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
 
   useEffect(() => {
@@ -69,6 +69,8 @@ export default function App() {
             setSoundId={setSoundId}
             volume={volume}
             setVolume={setVolume}
+            accentFirstBeat={accentFirstBeat}
+            setAccentFirstBeat={setAccentFirstBeat}
             playing={metronomePlaying}
             synced={timer.isRunning}
             currentBeat={currentBeat}

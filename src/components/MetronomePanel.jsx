@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
 import { MinusIcon, PauseIcon, PlayIcon, PlusIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
 
-export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, playing, synced, currentBeat, onToggle }) {
+export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle }) {
   const [isVolumeOpen, setIsVolumeOpen] = useState(false)
   const volumeControlRef = useRef(null)
   const volumeButtonRef = useRef(null)
@@ -107,6 +107,23 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
           {TIME_SIGNATURES.map((beats) => (
             <button key={beats} className={beatsPerBar === beats ? 'selected' : ''} onClick={() => setBeatsPerBar(beats)}>{beats}/4</button>
           ))}
+        </div>
+      </div>
+
+      <div className="setting-group accent-setting">
+        <span className="setting-label">ACENTUAR PRIMER PULSO</span>
+        <div className="accent-control">
+          <span>{accentFirstBeat ? 'Sí' : 'No'}</span>
+          <button
+            className={`toggle-switch ${accentFirstBeat ? 'selected' : ''}`}
+            type="button"
+            role="switch"
+            aria-checked={accentFirstBeat}
+            aria-label="Acentuar el primer pulso del compás"
+            onClick={() => setAccentFirstBeat((isEnabled) => !isEnabled)}
+          >
+            <span />
+          </button>
         </div>
       </div>
 

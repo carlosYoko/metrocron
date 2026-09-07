@@ -9,6 +9,7 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 - Modo de metrónomo independiente.
 - Tempo ajustable entre 30 y 240 BPM.
 - Compases de 3/4, 4/4 y 6/4 con acento visual y sonoro.
+- Acento sonoro del primer pulso configurable.
 - Cuatro sonidos sintetizados mediante Web Audio API.
 - Diseño responsive para escritorio y móvil.
 - Tema claro, oscuro o sincronizado con el dispositivo.

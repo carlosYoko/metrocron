@@ -4,10 +4,11 @@ import { SOUND_PRESETS } from '../config/metronome.js'
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SECONDS = 0.1
 
-export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume }) {
+export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accentFirstBeat }) {
   const audioContextRef = useRef(null)
   const masterGainRef = useRef(null)
   const volumeRef = useRef(volume)
+  const accentFirstBeatRef = useRef(accentFirstBeat)
   const nextNoteTimeRef = useRef(0)
   const nextBeatRef = useRef(0)
   const visualTimersRef = useRef([])
@@ -32,6 +33,10 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume }) {
       masterGainRef.current.gain.setTargetAtTime(volume / 100, context.currentTime, 0.015)
     }
   }, [volume])
+
+  useEffect(() => {
+    accentFirstBeatRef.current = accentFirstBeat
+  }, [accentFirstBeat])
 
   const playCompletionAlarm = useCallback(() => {
     const context = prepareAudio()
@@ -71,7 +76,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume }) {
     nextBeatRef.current = 0
 
     const schedulePulse = (beat, time) => {
-      const isAccent = beat === 0
+      const isAccent = accentFirstBeatRef.current && beat === 0
       const oscillator = context.createOscillator()
       const gain = context.createGain()
       oscillator.type = preset.wave
