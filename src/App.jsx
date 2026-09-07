@@ -9,13 +9,13 @@ import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
 export default function App() {
-  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat } = usePracticeSettings()
+  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled } = usePracticeSettings()
   const timer = useTimer(settings.duration, setDuration)
   const theme = useTheme()
   useDocumentTitle(timer)
-  const { bpm, beatsPerBar, soundId, volume, accentFirstBeat } = settings
+  const { bpm, beatsPerBar, soundId, volume, accentFirstBeat, timerMetronomeEnabled } = settings
   const [standalonePlaying, setStandalonePlaying] = useState(false)
-  const metronomePlaying = timer.isRunning || standalonePlaying
+  const metronomePlaying = (timer.isRunning && timerMetronomeEnabled) || standalonePlaying
   const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
 
@@ -45,6 +45,12 @@ export default function App() {
     setStandalonePlaying((playing) => !playing)
   }
 
+  const toggleTimerMetronome = () => {
+    prepareAudio()
+    setStandalonePlaying(false)
+    setTimerMetronomeEnabled((isEnabled) => !isEnabled)
+  }
+
   return (
     <div className="app-shell">
       <header className="site-header">
@@ -59,7 +65,13 @@ export default function App() {
 
       <main id="top" className="workspace">
         <div className="panels-grid">
-          <TimerPanel timer={timer} onToggle={toggleTimer} onReset={resetTimer} />
+          <TimerPanel
+            timer={timer}
+            metronomeEnabled={timerMetronomeEnabled}
+            onMetronomeToggle={toggleTimerMetronome}
+            onToggle={toggleTimer}
+            onReset={resetTimer}
+          />
           <MetronomePanel
             bpm={bpm}
             setBpm={setBpm}
@@ -72,7 +84,7 @@ export default function App() {
             accentFirstBeat={accentFirstBeat}
             setAccentFirstBeat={setAccentFirstBeat}
             playing={metronomePlaying}
-            synced={timer.isRunning}
+            synced={timer.isRunning && timerMetronomeEnabled}
             currentBeat={currentBeat}
             onToggle={toggleMetronome}
           />

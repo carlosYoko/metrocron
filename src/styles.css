@@ -64,6 +64,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .time-inputs input:disabled { opacity: .48; cursor: not-allowed; }
 .time-inputs input::-webkit-inner-spin-button { opacity: .55; }
 .input-separator { height: 37px; color: #aaa69d; font: 18px 'DM Mono', monospace; }
+.timer-metronome-setting { width: 285px; min-height: 32px; margin: -3px auto 18px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .timer-actions { display: flex; justify-content: center; gap: 9px; }
 .primary-action, .metronome-action { border: 0; border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 11px; font-size: 12px; font-weight: 700; letter-spacing: .03em; transition: transform .15s, background .15s, box-shadow .15s; }
 .primary-action { width: 228px; height: 48px; background: var(--coral); color: white; box-shadow: 0 8px 20px rgba(200,78,56,.18); }
@@ -192,6 +193,7 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .timer-clock { width: 250px; height: 250px; }
   .progress-ring { transform: rotate(-90deg) scale(.87); }
   .time-display strong { font-size: 44px; }
+  .timer-metronome-setting { width: 100%; }
   .tempo-control { gap: 27px; }
   .sound-options { grid-template-columns: repeat(2,1fr); }
   .setting-group { align-items: flex-start; flex-direction: column; }

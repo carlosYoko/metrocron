@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS = {
   soundId: 'classic',
   volume: 100,
   accentFirstBeat: true,
+  timerMetronomeEnabled: true,
 }
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
@@ -22,6 +23,7 @@ const sanitizeSetting = (key, value) => {
   if (key === 'soundId') return soundIds.has(value) ? value : DEFAULT_SETTINGS.soundId
   if (key === 'volume') return clamp(Math.round(Number(value) || 0), 0, 100)
   if (key === 'accentFirstBeat') return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.accentFirstBeat
+  if (key === 'timerMetronomeEnabled') return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.timerMetronomeEnabled
   return value
 }
 
@@ -62,6 +64,7 @@ export function usePracticeSettings() {
   const setSoundId = useCallback((value) => updateSetting('soundId', value), [updateSetting])
   const setVolume = useCallback((value) => updateSetting('volume', value), [updateSetting])
   const setAccentFirstBeat = useCallback((value) => updateSetting('accentFirstBeat', value), [updateSetting])
+  const setTimerMetronomeEnabled = useCallback((value) => updateSetting('timerMetronomeEnabled', value), [updateSetting])
 
-  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat }
+  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled }
 }

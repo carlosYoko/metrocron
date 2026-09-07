@@ -2,7 +2,7 @@ import { PauseIcon, PlayIcon, ResetIcon } from './Icons.jsx'
 
 const pad = (value) => String(value).padStart(2, '0')
 
-export function TimerPanel({ timer, onToggle, onReset }) {
+export function TimerPanel({ timer, metronomeEnabled, onMetronomeToggle, onToggle, onReset }) {
   const minutes = Math.floor(timer.remaining / 60)
   const seconds = timer.remaining % 60
   const configuredMinutes = Math.floor(timer.duration / 60)
@@ -55,6 +55,23 @@ export function TimerPanel({ timer, onToggle, onReset }) {
           <span>Segundos</span>
           <input type="number" min="0" max="59" value={configuredSeconds} disabled={timer.isRunning} onChange={(event) => updateTime('seconds', event.target.value)} />
         </label>
+      </div>
+
+      <div className="timer-metronome-setting">
+        <span className="setting-label">METRÓNOMO EN LA SESIÓN</span>
+        <div className="accent-control">
+          <span>{metronomeEnabled ? 'Sí' : 'No'}</span>
+          <button
+            className={`toggle-switch ${metronomeEnabled ? 'selected' : ''}`}
+            type="button"
+            role="switch"
+            aria-checked={metronomeEnabled}
+            aria-label="Usar el metrónomo con el temporizador"
+            onClick={onMetronomeToggle}
+          >
+            <span />
+          </button>
+        </div>
       </div>
 
       <div className="timer-actions">

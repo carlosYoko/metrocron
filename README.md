@@ -6,6 +6,7 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 
 - Temporizador configurable en minutos y segundos.
 - Metrónomo sincronizado automáticamente con cada sesión.
+- Temporizador utilizable con o sin metrónomo.
 - Modo de metrónomo independiente.
 - Tempo ajustable entre 30 y 240 BPM.
 - Compases de 3/4, 4/4 y 6/4 con acento visual y sonoro.
