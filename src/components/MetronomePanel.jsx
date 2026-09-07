@@ -1,8 +1,33 @@
+import { useEffect, useRef, useState } from 'react'
 import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
 import { MinusIcon, PauseIcon, PlayIcon, PlusIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
 
 export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, playing, synced, currentBeat, onToggle }) {
+  const [isVolumeOpen, setIsVolumeOpen] = useState(false)
+  const volumeControlRef = useRef(null)
+  const volumeButtonRef = useRef(null)
   const changeBpm = (difference) => setBpm((current) => Math.min(BPM_MAX, Math.max(BPM_MIN, current + difference)))
+
+  useEffect(() => {
+    if (!isVolumeOpen) return undefined
+
+    const handlePointerDown = (event) => {
+      if (!volumeControlRef.current?.contains(event.target)) setIsVolumeOpen(false)
+    }
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsVolumeOpen(false)
+        volumeButtonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isVolumeOpen])
 
   return (
     <section className="panel metronome-panel" aria-labelledby="metronome-title">
@@ -11,11 +36,20 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
           <span className="eyebrow">RITMO</span>
           <h2 id="metronome-title">Metrónomo</h2>
         </div>
-        <details className="volume-control">
-          <summary aria-label={`Ajustar volumen, ${volume}%`} title="Ajustar volumen">
+        <div className={`volume-control ${isVolumeOpen ? 'is-open' : ''}`} ref={volumeControlRef}>
+          <button
+            ref={volumeButtonRef}
+            className="volume-trigger"
+            type="button"
+            aria-label={`Ajustar volumen, ${volume}%`}
+            aria-expanded={isVolumeOpen}
+            aria-controls="volume-popover"
+            title="Ajustar volumen"
+            onClick={() => setIsVolumeOpen((isOpen) => !isOpen)}
+          >
             {volume === 0 ? <VolumeMutedIcon /> : <VolumeIcon />}
-          </summary>
-          <div className="volume-popover">
+          </button>
+          {isVolumeOpen && <div className="volume-popover" id="volume-popover">
             <div className="volume-heading">
               <span>VOLUMEN</span>
               <strong>{volume}%</strong>
@@ -29,8 +63,8 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
               onChange={(event) => setVolume(Number(event.target.value))}
               style={{ '--volume-progress': `${volume}%` }}
             />
-          </div>
-        </details>
+          </div>}
+        </div>
       </div>
 
       <div className="tempo-control">

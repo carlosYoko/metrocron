@@ -38,10 +38,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .status-running span { background: var(--coral); box-shadow: 0 0 0 4px rgba(224,100,75,.12); }
 .status-finished span { background: var(--green); }
 .volume-control { position: relative; }
-.volume-control summary { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #8f8c83; cursor: pointer; list-style: none; transition: color .15s, background .15s; }
-.volume-control summary::-webkit-details-marker { display: none; }
-.volume-control summary:hover, .volume-control[open] summary { color: var(--ink); background: #efebe4; }
-.volume-control summary svg { width: 21px; height: 21px; fill: currentColor; }
+.volume-trigger { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: #8f8c83; background: transparent; cursor: pointer; transition: color .15s, background .15s; }
+.volume-trigger:hover, .volume-control.is-open .volume-trigger { color: var(--ink); background: #efebe4; }
+.volume-trigger svg { width: 21px; height: 21px; fill: currentColor; }
 .volume-popover { position: absolute; z-index: 5; top: 45px; right: 0; width: 218px; padding: 15px 16px 17px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper); box-shadow: 0 12px 32px rgba(50,45,38,.16); }
 .volume-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 13px; }
 .volume-heading span { color: #8c8981; font-size: 9px; font-weight: 700; letter-spacing: .18em; }
@@ -127,9 +126,9 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
 [data-theme='dark'] .status-pill span { background: #747771; }
 [data-theme='dark'] .status-running span { background: var(--coral); }
 [data-theme='dark'] .status-finished span { background: var(--green); }
-[data-theme='dark'] .volume-control summary { color: #a3a59f; }
-[data-theme='dark'] .volume-control summary:hover,
-[data-theme='dark'] .volume-control[open] summary { color: var(--ink); background: #343735; }
+[data-theme='dark'] .volume-trigger { color: #a3a59f; }
+[data-theme='dark'] .volume-trigger:hover,
+[data-theme='dark'] .volume-control.is-open .volume-trigger { color: var(--ink); background: #343735; }
 [data-theme='dark'] .volume-popover { box-shadow: 0 14px 36px rgba(0,0,0,.38); }
 [data-theme='dark'] .volume-heading span { color: #999b95; }
 [data-theme='dark'] .volume-popover input { background: linear-gradient(to right, var(--coral) var(--volume-progress), #444742 var(--volume-progress)); }
