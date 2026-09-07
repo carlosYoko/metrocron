@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
 
-export function useTimer(initialSeconds = 10 * 60) {
+export function useTimer(initialSeconds = 3 * 60) {
   const [duration, setDuration] = useState(initialSeconds)
   const [remaining, setRemaining] = useState(initialSeconds)
   const [status, setStatus] = useState('idle')
