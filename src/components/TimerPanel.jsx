@@ -66,7 +66,6 @@ export function TimerPanel({ timer, onToggle, onReset }) {
           <ResetIcon />
         </button>
       </div>
-      <p className="sync-note"><span className="sync-dot" /> El metrónomo se sincroniza con tu sesión</p>
     </section>
   )
 }
