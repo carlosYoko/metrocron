@@ -1,7 +1,7 @@
 import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
-import { MinusIcon, PauseIcon, PlayIcon, PlusIcon, VolumeIcon } from './Icons.jsx'
+import { MinusIcon, PauseIcon, PlayIcon, PlusIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
 
-export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, playing, synced, currentBeat, onToggle }) {
+export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, playing, synced, currentBeat, onToggle }) {
   const changeBpm = (difference) => setBpm((current) => Math.min(BPM_MAX, Math.max(BPM_MIN, current + difference)))
 
   return (
@@ -11,7 +11,26 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
           <span className="eyebrow">RITMO</span>
           <h2 id="metronome-title">Metrónomo</h2>
         </div>
-        <VolumeIcon />
+        <details className="volume-control">
+          <summary aria-label={`Ajustar volumen, ${volume}%`} title="Ajustar volumen">
+            {volume === 0 ? <VolumeMutedIcon /> : <VolumeIcon />}
+          </summary>
+          <div className="volume-popover">
+            <div className="volume-heading">
+              <span>VOLUMEN</span>
+              <strong>{volume}%</strong>
+            </div>
+            <input
+              aria-label="Volumen del metrónomo"
+              type="range"
+              min="0"
+              max="100"
+              value={volume}
+              onChange={(event) => setVolume(Number(event.target.value))}
+              style={{ '--volume-progress': `${volume}%` }}
+            />
+          </div>
+        </details>
       </div>
 
       <div className="tempo-control">

@@ -14,6 +14,10 @@ export function VolumeIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm11.5-.5a5 5 0 0 1 0 7l1.5 1.5a7 7 0 0 0 0-10l-1.5 1.5Z" /></svg>
 }
 
+export function VolumeMutedIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm11.7.3-1.4 1.4 1.8 1.8-1.8 1.8 1.4 1.4 1.8-1.8 1.8 1.8 1.4-1.4-1.8-1.8 1.8-1.8-1.4-1.4-1.8 1.8-1.8-1.8Z" /></svg>
+}
+
 export function MinusIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11h14v2H5z" /></svg>
 }

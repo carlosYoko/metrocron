@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS = {
   bpm: 84,
   beatsPerBar: 4,
   soundId: 'classic',
+  volume: 100,
 }
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
@@ -18,6 +19,7 @@ const sanitizeSetting = (key, value) => {
   if (key === 'bpm') return clamp(Math.round(Number(value) || BPM_MIN), BPM_MIN, BPM_MAX)
   if (key === 'beatsPerBar') return TIME_SIGNATURES.includes(Number(value)) ? Number(value) : DEFAULT_SETTINGS.beatsPerBar
   if (key === 'soundId') return soundIds.has(value) ? value : DEFAULT_SETTINGS.soundId
+  if (key === 'volume') return clamp(Math.round(Number(value) || 0), 0, 100)
   return value
 }
 
@@ -56,6 +58,7 @@ export function usePracticeSettings() {
   const setBpm = useCallback((value) => updateSetting('bpm', value), [updateSetting])
   const setBeatsPerBar = useCallback((value) => updateSetting('beatsPerBar', value), [updateSetting])
   const setSoundId = useCallback((value) => updateSetting('soundId', value), [updateSetting])
+  const setVolume = useCallback((value) => updateSetting('volume', value), [updateSetting])
 
-  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId }
+  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume }
 }

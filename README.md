@@ -14,7 +14,7 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 - Tema claro, oscuro o sincronizado con el dispositivo.
 - Cuenta atrás visible en el título de la pestaña durante la práctica.
 - Alarma breve al completar el tiempo de práctica.
-- Duración, tempo, compás y sonido guardados entre sesiones.
+- Duración, tempo, compás, sonido y volumen guardados entre sesiones.
 
 ## Desarrollo local
 

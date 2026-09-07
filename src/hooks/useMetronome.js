@@ -4,8 +4,10 @@ import { SOUND_PRESETS } from '../config/metronome.js'
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SECONDS = 0.1
 
-export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
+export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume }) {
   const audioContextRef = useRef(null)
+  const masterGainRef = useRef(null)
+  const volumeRef = useRef(volume)
   const nextNoteTimeRef = useRef(0)
   const nextBeatRef = useRef(0)
   const visualTimersRef = useRef([])
@@ -15,10 +17,21 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
     if (!audioContextRef.current) {
       const AudioContext = window.AudioContext || window.webkitAudioContext
       audioContextRef.current = new AudioContext()
+      masterGainRef.current = audioContextRef.current.createGain()
+      masterGainRef.current.gain.value = volumeRef.current / 100
+      masterGainRef.current.connect(audioContextRef.current.destination)
     }
     if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume()
     return audioContextRef.current
   }, [])
+
+  useEffect(() => {
+    volumeRef.current = volume
+    const context = audioContextRef.current
+    if (context && masterGainRef.current) {
+      masterGainRef.current.gain.setTargetAtTime(volume / 100, context.currentTime, 0.015)
+    }
+  }, [volume])
 
   const playCompletionAlarm = useCallback(() => {
     const context = prepareAudio()
@@ -39,7 +52,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
       gain.gain.exponentialRampToValueAtTime(0.24, noteStart + 0.025)
       gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration)
       oscillator.connect(gain)
-      gain.connect(context.destination)
+      gain.connect(masterGainRef.current)
       oscillator.start(noteStart)
       oscillator.stop(noteStart + duration)
     })
@@ -66,7 +79,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId }) {
       gain.gain.setValueAtTime(preset.volume * (isAccent ? 1 : 0.72), time)
       gain.gain.exponentialRampToValueAtTime(0.0001, time + preset.duration)
       oscillator.connect(gain)
-      gain.connect(context.destination)
+      gain.connect(masterGainRef.current)
       oscillator.start(time)
       oscillator.stop(time + preset.duration)
 
