@@ -2,7 +2,7 @@ import { PauseIcon, PlayIcon, ResetIcon } from './Icons.jsx'
 
 const pad = (value) => String(value).padStart(2, '0')
 
-export function TimerPanel({ timer, metronomeEnabled, onMetronomeToggle, onToggle, onReset }) {
+export function TimerPanel({ className = '', timer, metronomeEnabled, onMetronomeToggle, onToggle, onReset }) {
   const minutes = Math.floor(timer.remaining / 60)
   const seconds = timer.remaining % 60
   const configuredMinutes = Math.floor(timer.duration / 60)
@@ -17,7 +17,7 @@ export function TimerPanel({ timer, metronomeEnabled, onMetronomeToggle, onToggl
   }
 
   return (
-    <section className="panel timer-panel" aria-labelledby="timer-title">
+    <section className={`panel timer-panel ${className}`} aria-labelledby="timer-title">
       <div className="panel-heading">
         <div>
           <span className="eyebrow">SESIÓN</span>

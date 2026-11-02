@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
-import { MinusIcon, PauseIcon, PlayIcon, PlusIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
+import { PauseIcon, PlayIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
 
-export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle }) {
+export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle }) {
   const [isVolumeOpen, setIsVolumeOpen] = useState(false)
   const volumeControlRef = useRef(null)
   const volumeButtonRef = useRef(null)
@@ -30,7 +30,7 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
   }, [isVolumeOpen])
 
   return (
-    <section className="panel metronome-panel" aria-labelledby="metronome-title">
+    <section className={`panel metronome-panel ${className}`} aria-labelledby="metronome-title">
       <div className="panel-heading">
         <div>
           <span className="eyebrow">RITMO</span>
@@ -68,7 +68,10 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
       </div>
 
       <div className="tempo-control">
-        <button className="round-button" onClick={() => changeBpm(-1)} aria-label="Bajar un BPM"><MinusIcon /></button>
+        <div className="tempo-step-group">
+          <button className="round-button" onClick={() => changeBpm(-1)} aria-label="Bajar un BPM">-1</button>
+          <button className="bpm-step-button" onClick={() => changeBpm(-5)} aria-label="Bajar 5 BPM">-5</button>
+        </div>
         <div className="bpm-readout">
           <input
             aria-label="Pulsos por minuto"
@@ -80,7 +83,10 @@ export function MetronomePanel({ bpm, setBpm, beatsPerBar, setBeatsPerBar, sound
           />
           <span>BPM</span>
         </div>
-        <button className="round-button" onClick={() => changeBpm(1)} aria-label="Subir un BPM"><PlusIcon /></button>
+        <div className="tempo-step-group">
+          <button className="round-button" onClick={() => changeBpm(1)} aria-label="Subir un BPM">+1</button>
+          <button className="bpm-step-button" onClick={() => changeBpm(5)} aria-label="Subir 5 BPM">+5</button>
+        </div>
       </div>
 
       <input

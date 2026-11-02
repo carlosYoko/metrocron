@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS = {
   volume: 100,
   accentFirstBeat: true,
   timerMetronomeEnabled: true,
+  activePanel: 'timer',
 }
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
@@ -24,6 +25,7 @@ const sanitizeSetting = (key, value) => {
   if (key === 'volume') return clamp(Math.round(Number(value) || 0), 0, 100)
   if (key === 'accentFirstBeat') return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.accentFirstBeat
   if (key === 'timerMetronomeEnabled') return typeof value === 'boolean' ? value : DEFAULT_SETTINGS.timerMetronomeEnabled
+  if (key === 'activePanel') return ['timer', 'metronome'].includes(value) ? value : DEFAULT_SETTINGS.activePanel
   return value
 }
 
@@ -65,6 +67,7 @@ export function usePracticeSettings() {
   const setVolume = useCallback((value) => updateSetting('volume', value), [updateSetting])
   const setAccentFirstBeat = useCallback((value) => updateSetting('accentFirstBeat', value), [updateSetting])
   const setTimerMetronomeEnabled = useCallback((value) => updateSetting('timerMetronomeEnabled', value), [updateSetting])
+  const setActivePanel = useCallback((value) => updateSetting('activePanel', value), [updateSetting])
 
-  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled }
+  return { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled, setActivePanel }
 }

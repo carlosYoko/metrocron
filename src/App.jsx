@@ -9,12 +9,13 @@ import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
 export default function App() {
-  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled } = usePracticeSettings()
+  const { settings, setDuration, setBpm, setBeatsPerBar, setSoundId, setVolume, setAccentFirstBeat, setTimerMetronomeEnabled, setActivePanel } = usePracticeSettings()
   const timer = useTimer(settings.duration, setDuration)
   const theme = useTheme()
   useDocumentTitle(timer)
   const { bpm, beatsPerBar, soundId, volume, accentFirstBeat, timerMetronomeEnabled } = settings
   const [standalonePlaying, setStandalonePlaying] = useState(false)
+  const [activeMobilePanel, setActiveMobilePanel] = useState(settings.activePanel)
   const metronomePlaying = (timer.isRunning && timerMetronomeEnabled) || standalonePlaying
   const { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
@@ -71,8 +72,35 @@ export default function App() {
       </header>
 
       <main id="top" className="workspace">
+        <nav className="mobile-panel-switcher" aria-label="Seleccionar herramienta">
+          <button
+            type="button"
+            className={activeMobilePanel === 'timer' ? 'selected' : ''}
+            aria-pressed={activeMobilePanel === 'timer'}
+            onClick={() => {
+              setActiveMobilePanel('timer')
+              setActivePanel('timer')
+            }}
+          >
+            Temporizador
+            {timer.isRunning && <span className="mobile-tab-indicator" aria-label="En marcha" />}
+          </button>
+          <button
+            type="button"
+            className={activeMobilePanel === 'metronome' ? 'selected' : ''}
+            aria-pressed={activeMobilePanel === 'metronome'}
+            onClick={() => {
+              setActiveMobilePanel('metronome')
+              setActivePanel('metronome')
+            }}
+          >
+            Metrónomo
+            {metronomePlaying && <span className="mobile-tab-indicator" aria-label="En marcha" />}
+          </button>
+        </nav>
         <div className="panels-grid">
           <TimerPanel
+            className={activeMobilePanel === 'timer' ? 'mobile-panel-active' : 'mobile-panel-hidden'}
             timer={timer}
             metronomeEnabled={timerMetronomeEnabled}
             onMetronomeToggle={toggleTimerMetronome}
@@ -80,6 +108,7 @@ export default function App() {
             onReset={resetTimer}
           />
           <MetronomePanel
+            className={activeMobilePanel === 'metronome' ? 'mobile-panel-active' : 'mobile-panel-hidden'}
             bpm={bpm}
             setBpm={setBpm}
             beatsPerBar={beatsPerBar}
