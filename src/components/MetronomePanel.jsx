@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
 import { PauseIcon, PlayIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
 
-export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle }) {
+export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle, screenWakeLockStatus }) {
   const [isVolumeOpen, setIsVolumeOpen] = useState(false)
   const volumeControlRef = useRef(null)
   const volumeButtonRef = useRef(null)
@@ -148,6 +148,17 @@ export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBe
         {playing ? <PauseIcon /> : <PlayIcon />}
         {synced ? 'Sincronizado con la sesión' : playing ? 'Detener metrónomo' : 'Usar sin temporizador'}
       </button>
+      {playing && screenWakeLockStatus !== 'idle' && (
+        <p className={`screen-wake-lock-status screen-wake-lock-${screenWakeLockStatus}`} role="status">
+          {screenWakeLockStatus === 'active'
+            ? 'La pantalla no se apagará automáticamente mientras el metrónomo esté en marcha.'
+            : screenWakeLockStatus === 'unsupported'
+              ? 'Este navegador no permite mantener la pantalla encendida.'
+              : screenWakeLockStatus === 'unavailable'
+                ? 'No se pudo mantener la pantalla encendida.'
+                : 'Solicitando mantener la pantalla encendida…'}
+        </p>
+      )}
     </section>
   )
 }

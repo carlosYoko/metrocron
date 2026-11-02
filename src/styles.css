@@ -121,6 +121,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .metronome-action:hover:not(:disabled) { background: #efebe4; }
 .metronome-action.active { border-color: rgba(224,100,75,.5); color: var(--coral-dark); }
 .metronome-action:disabled { color: var(--green); border-color: rgba(49,95,83,.22); background: rgba(49,95,83,.045); cursor: default; }
+.screen-wake-lock-status { margin: 7px 0 0; color: var(--muted); font-size: 10px; line-height: 1.4; text-align: center; }
+.screen-wake-lock-unavailable,
+.screen-wake-lock-unsupported { color: var(--coral-dark); }
 footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8px; font-weight: 700; letter-spacing: .24em; }
 
 :root[data-theme='dark'] { color: #e8e5df; background: #161817; --ink: #e8e5df; --muted: #aaa7a0; --paper: #222523; --line: #40433f; --coral: #ef735a; --coral-dark: #ff866e; --green: #74aa99; --page: #161817; --page-glow-a: rgba(50,55,51,.46); --page-glow-b: rgba(38,45,41,.4); }

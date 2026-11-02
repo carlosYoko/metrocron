@@ -5,6 +5,7 @@ import { ThemeSwitcher } from './components/ThemeSwitcher.jsx'
 import { useDocumentTitle } from './hooks/useDocumentTitle.js'
 import { useMetronome } from './hooks/useMetronome.js'
 import { usePracticeSettings } from './hooks/usePracticeSettings.js'
+import { useScreenWakeLock } from './hooks/useScreenWakeLock.js'
 import { useTheme } from './hooks/useTheme.js'
 import { useTimer } from './hooks/useTimer.js'
 
@@ -17,6 +18,7 @@ export default function App() {
   const [standalonePlaying, setStandalonePlaying] = useState(false)
   const [activeMobilePanel, setActiveMobilePanel] = useState(settings.activePanel)
   const metronomePlaying = (timer.isRunning && timerMetronomeEnabled) || standalonePlaying
+  const screenWakeLockStatus = useScreenWakeLock(metronomePlaying)
   const { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
 
@@ -123,6 +125,7 @@ export default function App() {
             synced={timer.isRunning && timerMetronomeEnabled}
             currentBeat={currentBeat}
             onToggle={toggleMetronome}
+            screenWakeLockStatus={screenWakeLockStatus}
           />
         </div>
       </main>
