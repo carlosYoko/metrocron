@@ -12,7 +12,7 @@ export function useTimer(initialSeconds = 3 * 60, onDurationChange) {
     if (status !== 'running') return undefined
 
     const updateRemaining = () => {
-      const nextRemaining = Math.max(0, Math.ceil((endTimeRef.current - performance.now()) / 1000))
+      const nextRemaining = Math.max(0, Math.ceil((endTimeRef.current - Date.now()) / 1000))
       setRemaining(nextRemaining)
 
       if (nextRemaining === 0) setStatus('finished')
@@ -27,13 +27,13 @@ export function useTimer(initialSeconds = 3 * 60, onDurationChange) {
     const secondsToRun = remaining > 0 ? remaining : duration
     if (secondsToRun <= 0) return
     setRemaining(secondsToRun)
-    endTimeRef.current = performance.now() + secondsToRun * 1000
+    endTimeRef.current = Date.now() + secondsToRun * 1000
     setStatus('running')
   }, [duration, remaining])
 
   const pause = useCallback(() => {
     if (status !== 'running') return
-    const nextRemaining = Math.max(0, Math.ceil((endTimeRef.current - performance.now()) / 1000))
+    const nextRemaining = Math.max(0, Math.ceil((endTimeRef.current - Date.now()) / 1000))
     setRemaining(nextRemaining)
     setStatus(nextRemaining > 0 ? 'paused' : 'finished')
   }, [status])

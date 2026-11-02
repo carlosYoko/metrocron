@@ -7,6 +7,17 @@ export default [
   { ignores: ['dist'] },
   js.configs.recommended,
   {
+    files: ['public/metronome-processor.js'],
+    languageOptions: {
+      globals: {
+        AudioWorkletProcessor: 'readonly',
+        currentFrame: 'readonly',
+        sampleRate: 'readonly',
+        registerProcessor: 'readonly',
+      },
+    },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     plugins: {
       'react-hooks': reactHooks,

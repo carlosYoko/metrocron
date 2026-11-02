@@ -16,27 +16,34 @@ export default function App() {
   const { bpm, beatsPerBar, soundId, volume, accentFirstBeat, timerMetronomeEnabled } = settings
   const [standalonePlaying, setStandalonePlaying] = useState(false)
   const metronomePlaying = (timer.isRunning && timerMetronomeEnabled) || standalonePlaying
-  const { currentBeat, prepareAudio, playCompletionAlarm } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
+  const { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
 
   useEffect(() => {
-    if (timer.status === 'finished' && !completionNotifiedRef.current) {
+    if (timer.status === 'finished' && !completionNotifiedRef.current && !backgroundAudioAvailable) {
       completionNotifiedRef.current = true
       playCompletionAlarm()
     } else if (timer.status !== 'finished') {
       completionNotifiedRef.current = false
     }
-  }, [playCompletionAlarm, timer.status])
+  }, [backgroundAudioAvailable, playCompletionAlarm, timer.status])
 
   const toggleTimer = () => {
     prepareAudio()
     setStandalonePlaying(false)
-    if (timer.isRunning) timer.pause()
-    else timer.start()
+    if (timer.isRunning) {
+      timer.pause()
+      cancelTimerAlarm()
+    } else {
+      const seconds = timer.remaining > 0 ? timer.remaining : timer.duration
+      timer.start()
+      scheduleTimerAlarm(seconds)
+    }
   }
 
   const resetTimer = () => {
     setStandalonePlaying(false)
+    cancelTimerAlarm()
     timer.reset()
   }
 
