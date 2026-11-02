@@ -23,6 +23,7 @@ export function useTheme() {
   useEffect(() => {
     document.documentElement.dataset.theme = resolvedTheme
     document.documentElement.style.colorScheme = resolvedTheme
+    document.querySelector('#app-theme-color')?.setAttribute('content', resolvedTheme === 'dark' ? '#161817' : '#f1ede5')
     localStorage.setItem(STORAGE_KEY, preference)
   }, [preference, resolvedTheme])
 

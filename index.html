@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4efe6" />
+    <meta id="app-theme-color" name="theme-color" content="#f1ede5" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Metrocron" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -22,6 +22,7 @@
         const theme = preference === 'system' ? systemTheme : preference
         document.documentElement.dataset.theme = theme
         document.documentElement.style.colorScheme = theme
+        document.querySelector('#app-theme-color').content = theme === 'dark' ? '#161817' : '#f1ede5'
       })()
     </script>
     <title>Metrocron — Tu tiempo, a tempo</title>
