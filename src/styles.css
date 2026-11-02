@@ -220,9 +220,9 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .bpm-readout { flex: 0 1 clamp(90px, 28vw, 128px); min-width: 0; }
   .bpm-readout input { width: 100%; font-size: 44px; }
   .bpm-readout span { margin-top: 5px; }
-  .tempo-slider { height: 24px; margin: 8px 0 0; background-clip: content-box; padding: 10px 0; }
-  .tempo-labels { margin-top: -2px; }
-  .beat-indicator { height: 40px; gap: clamp(10px, 5vw, 20px); margin: 7px 0 8px; padding: 0 8px; }
+  .tempo-slider { height: 24px; margin: 24px 0 0; background-clip: content-box; padding: 10px 0; }
+  .tempo-labels { margin-top: 24px; }
+  .beat-indicator { height: 40px; gap: clamp(10px, 5vw, 20px); margin: 11px 0 8px; padding: 0 8px; }
   .beat-indicator span { width: 25px; height: 25px; }
   .setting-group { align-items: center; gap: 10px; margin-top: 8px; }
   .setting-group .setting-label { white-space: normal; font-size: 9px; letter-spacing: .15em; }
@@ -248,7 +248,7 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .mobile-panel-switcher { margin-bottom: 6px; }
   .timer-clock { width: min(165px, 50vw); height: min(165px, 50vw); margin: 5px auto; }
   .tempo-control { margin-top: 6px; }
-  .beat-indicator { margin: 4px 0 5px; }
+  .beat-indicator { margin: 8px 0 5px; }
   .setting-group { margin-top: 5px; }
   .sound-group { margin-top: 7px; }
   .sound-options button { height: 38px; }
