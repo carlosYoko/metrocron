@@ -78,7 +78,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .sync-note { display: flex; align-items: center; justify-content: center; gap: 8px; color: #969189; font-size: 10px; margin: 16px 0 0; }
 .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
 .tempo-control { display: flex; align-items: center; justify-content: center; gap: 42px; margin-top: 38px; }
-.tempo-step-group { display: flex; align-items: center; gap: 7px; }
+.tempo-step-group { display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .round-button { width: 39px; height: 39px; border: 1px solid var(--line); border-radius: 50%; background: transparent; display: grid; place-items: center; cursor: pointer; transition: background .15s; }
 .round-button:hover { background: #efebe4; }
 .round-button svg { width: 16px; fill: #6d6962; }

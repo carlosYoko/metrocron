@@ -17,6 +17,8 @@ Una web app sencilla para practicar guitarra con el tiempo y el pulso bajo contr
 - Diseño responsive para escritorio y móvil.
 - En móvil, selector entre vistas compactas del temporizador y el metrónomo.
 - La última vista seleccionada en móvil se recuerda entre sesiones.
+- Instalable como aplicación web (PWA) en Android y iOS.
+- Interfaz y audio disponibles sin conexión tras la instalación.
 - Tema claro, oscuro o sincronizado con el dispositivo.
 - Cuenta atrás visible en el título de la pestaña durante la práctica.
 - Alarma breve al completar el tiempo de práctica.
@@ -31,6 +33,15 @@ npm run dev
 ```
 
 La aplicación no necesita variables de entorno ni servicios externos.
+
+## Instalar en el móvil
+
+La aplicación publicada en HTTPS se puede añadir a la pantalla de inicio:
+
+- **Android:** abre Metrocron en Chrome y elige **Instalar aplicación** o **Añadir a pantalla de inicio** en el menú.
+- **iPhone/iPad:** abre Metrocron en Safari, toca **Compartir** y elige **Añadir a pantalla de inicio**.
+
+Al abrirla desde el icono se muestra sin la interfaz del navegador. La instalación no requiere publicar una app en las tiendas. Las opciones de audio en segundo plano siguen dependiendo del navegador y del sistema operativo.
 
 Para abrir la aplicación desde un móvil conectado a la misma red Wi-Fi:
 

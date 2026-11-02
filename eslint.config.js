@@ -18,6 +18,12 @@ export default [
     },
   },
   {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: globals.serviceworker,
+    },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     plugins: {
       'react-hooks': reactHooks,

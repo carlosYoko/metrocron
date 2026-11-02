@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Metrocron — Tu tiempo, a tempo",
+  "short_name": "Metrocron",
+  "description": "Temporizador y metrónomo para sesiones de práctica musical.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f1ede5",
+  "theme_color": "#f4efe6",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
