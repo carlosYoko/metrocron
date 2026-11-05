@@ -13,6 +13,8 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
     this.pulseIndex = 0
     this.rhythmBeats = 1
     this.rhythmDivisions = 1
+    this.visualBeat = 0
+    this.nextVisualFrame = currentFrame
     this.nextBeatFrame = currentFrame
     this.pulse = null
     this.timerAlarmFrame = null
@@ -36,6 +38,11 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
         if (this.playing && (!wasPlaying || timingChanged)) {
           this.pulseIndex = 0
           this.nextBeatFrame = currentFrame + 0.05 * sampleRate
+          this.visualBeat = 0
+          this.nextVisualFrame = this.nextBeatFrame
+          this.port.postMessage({ type: 'visual-reset' })
+        } else if (!this.playing && wasPlaying) {
+          this.port.postMessage({ type: 'visual-reset' })
         }
         this.port.postMessage({ type: 'settings-applied', rhythmBeats: this.rhythmBeats, rhythmDivisions: this.rhythmDivisions })
       } else if (data.type === 'schedule-alarm') {
@@ -64,6 +71,13 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
       if (this.timerAlarmFrame !== null && frame >= this.timerAlarmFrame) {
         this.alarmStartFrame = frame
         this.timerAlarmFrame = null
+      }
+
+      // Los indicadores de negras comparten el mismo origen y reloj que los clics.
+      if (this.playing && frame >= this.nextVisualFrame) {
+        this.port.postMessage({ type: 'beat', beat: this.visualBeat, audioTime: this.nextVisualFrame / sampleRate })
+        this.visualBeat = (this.visualBeat + 1) % this.beatsPerBar
+        this.nextVisualFrame += sampleRate * (60 / this.bpm)
       }
 
       if (this.playing && frame >= this.nextBeatFrame) {

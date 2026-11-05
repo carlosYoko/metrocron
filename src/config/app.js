@@ -1,4 +1,4 @@
-export const APP_VERSION = 'audio-3'
+export const APP_VERSION = 'audio-4'
 
 export async function refreshApplication() {
   // Comprobar la conexión antes de eliminar los archivos sin conexión.

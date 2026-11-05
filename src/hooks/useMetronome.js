@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getRhythm, SOUND_PRESETS } from '../config/metronome.js'
 import processorSource from '../audio/metronome-processor.js?raw'
+import { getVisualDelay } from '../audio/visualTiming.js'
 
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SECONDS = 0.1
@@ -17,10 +18,25 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
   const accentFirstBeatRef = useRef(accentFirstBeat)
   const nextNoteTimeRef = useRef(0)
   const nextBeatRef = useRef(0)
-  const visualTimersRef = useRef([])
+  const visualTimersRef = useRef(new Set())
   const [currentBeat, setCurrentBeat] = useState(-1)
   const [backgroundAudioAvailable, setBackgroundAudioAvailable] = useState(false)
   const [audioEngine, setAudioEngine] = useState('Sin iniciar')
+
+  const clearVisualTimers = useCallback(() => {
+    visualTimersRef.current.forEach(window.clearTimeout)
+    visualTimersRef.current.clear()
+  }, [])
+
+  const scheduleVisualBeat = useCallback((beat, audioTime) => {
+    const context = audioContextRef.current
+    if (!context || !playingRef.current || document.hidden) return
+    const timer = window.setTimeout(() => {
+      visualTimersRef.current.delete(timer)
+      if (playingRef.current && !document.hidden) setCurrentBeat(beat)
+    }, getVisualDelay(context, audioTime, performance.now()))
+    visualTimersRef.current.add(timer)
+  }, [])
 
   const syncWorklet = useCallback(() => {
     const node = workletNodeRef.current
@@ -70,7 +86,12 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
             const node = new AudioWorkletNode(audioContextRef.current, 'metrocron-audio')
             node.connect(masterGainRef.current)
             node.port.onmessage = ({ data }) => {
-              if (data.type === 'settings-applied') {
+              if (data.type === 'visual-reset') {
+                clearVisualTimers()
+                setCurrentBeat(-1)
+              } else if (data.type === 'beat') {
+                scheduleVisualBeat(data.beat, data.audioTime)
+              } else if (data.type === 'settings-applied') {
                 setAudioEngine(`AudioWorklet · ${data.rhythmBeats}/${data.rhythmDivisions} negras por clic`)
               }
             }
@@ -92,7 +113,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
     }
     if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume()
     return audioContextRef.current
-  }, [syncWorklet])
+  }, [clearVisualTimers, scheduleVisualBeat, syncWorklet])
 
   useEffect(() => {
     volumeRef.current = volume
@@ -199,10 +220,9 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
         pulseIndex += 1
       }
       while (nextNoteTimeRef.current < context.currentTime + SCHEDULE_AHEAD_SECONDS) {
-        const visualDelay = Math.max(0, (nextNoteTimeRef.current - context.currentTime) * 1000)
-        const beat = nextBeatRef.current
-        const timer = window.setTimeout(() => setCurrentBeat(beat), visualDelay)
-        visualTimersRef.current.push(timer)
+        if (!workletNodeRef.current && workletFailedRef.current) {
+          scheduleVisualBeat(nextBeatRef.current, nextNoteTimeRef.current)
+        }
         nextNoteTimeRef.current += 60 / bpm
         nextBeatRef.current = (nextBeatRef.current + 1) % beatsPerBar
       }
@@ -213,10 +233,9 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
 
     return () => {
       window.clearInterval(interval)
-      visualTimersRef.current.forEach(window.clearTimeout)
-      visualTimersRef.current = []
+      clearVisualTimers()
     }
-  }, [backgroundAudioAvailable, beatsPerBar, bpm, playing, prepareAudio, rhythmId, soundId])
+  }, [backgroundAudioAvailable, beatsPerBar, bpm, clearVisualTimers, playing, prepareAudio, rhythmId, scheduleVisualBeat, soundId])
 
   return { audioEngine, currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable }
 }

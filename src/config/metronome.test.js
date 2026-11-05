@@ -8,14 +8,15 @@ const source = readFileSync(new URL('../audio/metronome-processor.js', import.me
 
 function createProcessor() {
   let Processor
+  const messages = []
   const context = vm.createContext({
-    AudioWorkletProcessor: class { port = { onmessage: null, postMessage: () => {} } },
+    AudioWorkletProcessor: class { port = { onmessage: null, postMessage: (message) => messages.push(message) } },
     currentFrame: 0,
     sampleRate: 8000,
     registerProcessor: (_name, implementation) => { Processor = implementation },
   })
   vm.runInContext(source, context)
-  return { processor: new Processor(), context }
+  return { processor: new Processor(), context, messages }
 }
 
 const settings = (rhythm) => ({
@@ -23,6 +24,31 @@ const settings = (rhythm) => ({
   rhythmBeats: rhythm.beats, rhythmDivisions: rhythm.divisions,
   wave: 'sine', frequency: 920, accent: 1320,
   duration: 0.025, pulseVolume: 0.34, accentFirstBeat: true, playing: true,
+})
+
+test('Los indicadores siguen el reloj de audio y mantienen negras con semicorcheas', () => {
+  const { processor, context, messages } = createProcessor()
+  processor.port.onmessage({ data: settings(getRhythm('sixteenth')) })
+  for (let frame = 0; frame < 18000; frame += 128) {
+    context.currentFrame = frame
+    processor.process([], [[new Float32Array(128)]])
+  }
+  const beats = messages.filter(({ type }) => type === 'beat')
+  assert.deepEqual(beats.map(({ beat }) => beat), [0, 1, 2, 3, 0])
+  beats.forEach(({ audioTime }, index) => assert.equal(audioTime, 0.05 + index * 0.5))
+
+  context.currentFrame = 18000
+  processor.port.onmessage({ data: settings(getRhythm('half')) })
+  processor.process([], [[new Float32Array(512)]])
+  const restarted = messages.filter(({ type }) => type === 'beat').at(-1)
+  assert.equal(restarted.beat, 0)
+  assert.equal(restarted.audioTime, (18000 + 400) / 8000)
+
+  processor.port.onmessage({ data: { ...settings(getRhythm('half')), playing: false } })
+  const count = messages.filter(({ type }) => type === 'beat').length
+  context.currentFrame += 512
+  processor.process([], [[new Float32Array(8000)]])
+  assert.equal(messages.filter(({ type }) => type === 'beat').length, count)
 })
 
 test('El ritmo predeterminado y los identificadores son válidos', () => {
