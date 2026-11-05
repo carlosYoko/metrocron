@@ -1,9 +1,8 @@
-const CACHE_NAME = 'metrocron-v1'
+const CACHE_NAME = 'metrocron-v2'
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
   '/favicon.svg',
-  '/metronome-processor.js',
   '/pwa-192.png',
   '/pwa-512.png',
   '/apple-touch-icon.png',
@@ -13,12 +12,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(CACHE_NAME)
-      await cache.addAll(APP_SHELL)
+      await cache.addAll(APP_SHELL.map((url) => new Request(url, { cache: 'reload' })))
       const appShell = await cache.match('/')
       const html = await appShell.text()
       const assets = [...html.matchAll(/(?:src|href)=["']([^"']+\.(?:js|css))(?:\?[^"']*)?["']/g)]
         .map(([, asset]) => asset)
-      await cache.addAll(assets)
+      await cache.addAll(assets.map((url) => new Request(url, { cache: 'reload' })))
       await self.skipWaiting()
     })(),
   )

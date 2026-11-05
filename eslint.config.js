@@ -7,7 +7,7 @@ export default [
   { ignores: ['dist'] },
   js.configs.recommended,
   {
-    files: ['public/metronome-processor.js'],
+    files: ['src/audio/metronome-processor.js'],
     languageOptions: {
       globals: {
         AudioWorkletProcessor: 'readonly',

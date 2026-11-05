@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getRhythm, SOUND_PRESETS } from '../config/metronome.js'
+import processorSource from '../audio/metronome-processor.js?raw'
 
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SECONDS = 0.1
@@ -59,8 +60,11 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
 
       if (audioContextRef.current.audioWorklet && window.AudioWorkletNode) {
         setBackgroundAudioAvailable(true)
+        // El procesador se incluye en el bundle para que la PWA no cargue
+        // una versión antigua del motor junto a una interfaz nueva.
+        const processorUrl = URL.createObjectURL(new Blob([processorSource], { type: 'text/javascript' }))
         audioContextRef.current.audioWorklet
-          .addModule(`${import.meta.env.BASE_URL}metronome-processor.js`)
+          .addModule(processorUrl)
           .then(() => {
             const node = new AudioWorkletNode(audioContextRef.current, 'metrocron-audio')
             node.connect(masterGainRef.current)
@@ -72,6 +76,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
             setBackgroundAudioAvailable(false)
             console.error('No se pudo iniciar el audio en segundo plano.', error)
           })
+          .finally(() => URL.revokeObjectURL(processorUrl))
       } else {
         workletFailedRef.current = true
       }

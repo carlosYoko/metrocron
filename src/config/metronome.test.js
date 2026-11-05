@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import vm from 'node:vm'
 import { getRhythm, RHYTHMS } from './metronome.js'
 
-const source = readFileSync(new URL('../../public/metronome-processor.js', import.meta.url), 'utf8')
+const source = readFileSync(new URL('../audio/metronome-processor.js', import.meta.url), 'utf8')
 
 function createProcessor() {
   let Processor
