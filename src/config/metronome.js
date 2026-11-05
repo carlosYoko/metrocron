@@ -5,6 +5,16 @@ export const SOUND_PRESETS = [
   { id: 'soft', label: 'Suave', wave: 'sine', frequency: 360, accent: 520, duration: 0.1, volume: 0.28 },
 ]
 
+// Duración de cada clic en negras: beats / divisions.
+export const RHYTHMS = [
+  { id: 'half', label: 'Blanca', beats: 2, divisions: 1 },
+  { id: 'quarter', label: 'Negra', beats: 1, divisions: 1 },
+  { id: 'eighth', label: 'Corchea', beats: 1, divisions: 2 },
+  { id: 'sixteenth', label: 'Semicorchea', beats: 1, divisions: 4 },
+]
+
+export const getRhythm = (id) => RHYTHMS.find((rhythm) => rhythm.id === id) ?? RHYTHMS.find((rhythm) => rhythm.id === 'quarter')
+
 export const TIME_SIGNATURES = [3, 4, 6]
 
 export const BPM_MIN = 30

@@ -19,6 +19,19 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .brand-icon span:nth-child(4) { height: 8px; }
 .site-header p { color: #86827a; font-size: 13px; letter-spacing: .04em; }
 .header-actions { display: flex; align-items: center; gap: 22px; }
+.settings-menu { position: relative; }
+.settings-trigger { width: 42px; height: 42px; padding: 9px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--muted); cursor: pointer; }
+.settings-trigger:hover, .settings-trigger.selected { color: var(--coral-dark); border-color: var(--coral); }
+.settings-trigger svg { width: 23px; height: 23px; }
+.settings-popover { position: absolute; z-index: 20; top: calc(100% + 10px); right: 0; width: min(320px, calc(100vw - 28px)); max-height: calc(100dvh - 90px); overflow-y: auto; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); box-shadow: 0 12px 36px rgba(0,0,0,.18); }
+.settings-popover h2 { margin: 0 0 20px; color: var(--ink); font-size: 16px; }
+.settings-section + .settings-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.settings-section > .setting-label { display: block; margin-bottom: 10px; }
+.settings-popover .theme-switcher { justify-content: space-between; }
+.settings-popover .theme-switcher button { width: auto; flex: 1; padding: 0 8px; justify-content: center; }
+.settings-popover .theme-switcher button span { display: inline; }
+.settings-popover .sound-options button { height: 56px; }
+
 .theme-switcher { display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid var(--line); border-radius: 5px; background: rgba(251,249,244,.58); }
 .theme-switcher button { height: 31px; padding: 0 9px; border: 0; border-radius: 3px; background: transparent; color: #858179; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 9px; font-weight: 600; transition: color .15s, background .15s, box-shadow .15s; }
 .theme-switcher button:hover { color: var(--ink); }
@@ -38,7 +51,11 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .status-pill span { width: 6px; height: 6px; background: #aaa69e; border-radius: 50%; }
 .status-running span { background: var(--coral); box-shadow: 0 0 0 4px rgba(224,100,75,.12); }
 .status-finished span { background: var(--green); }
-.volume-control { position: relative; }
+.metronome-header-controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-left: auto; }
+.accent-button { min-height: 36px; padding: 0 13px; border: 1px solid var(--line); border-radius: 18px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 600; cursor: pointer; transition: color .15s, border-color .15s, background .15s; }
+.accent-button:hover { color: var(--ink); border-color: var(--coral); }
+.accent-button.selected { color: var(--coral-dark); border-color: var(--coral); background: rgba(224,100,75,.09); }
+.volume-control { position: relative; flex-shrink: 0; }
 .volume-trigger { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; color: #8f8c83; background: transparent; cursor: pointer; transition: color .15s, background .15s; }
 .volume-trigger:hover, .volume-control.is-open .volume-trigger { color: var(--ink); background: #efebe4; }
 .volume-trigger svg { width: 21px; height: 21px; fill: currentColor; }
@@ -108,6 +125,15 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .toggle-switch > span { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--paper); box-shadow: 0 1px 4px rgba(50,45,38,.22); transition: transform .18s; }
 .toggle-switch.selected { background: var(--coral); }
 .toggle-switch.selected > span { transform: translateX(17px); }
+.rhythm-setting { margin-top: 18px; }
+.rhythm-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.rhythm-options button { min-width: 0; min-height: 90px; padding: 6px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 1px solid var(--line); border-radius: 4px; background: transparent; color: var(--muted); cursor: pointer; }
+.rhythm-options button:hover { border-color: var(--coral); color: var(--ink); }
+.rhythm-options button.selected { border-color: var(--coral); color: var(--coral-dark); background: rgba(224,100,75,.07); }
+.rhythm-icon { display: block; width: 30px; height: 40px; flex-shrink: 0; }
+.rhythm-name { font-size: 10px; font-weight: 700; }
+.rhythm-duration { font-size: 9px; }
+@media (max-width: 540px) { .rhythm-setting { margin-top: 10px; } }
 .sound-group { display: block; margin-top: 24px; }
 .sound-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 9px; }
 .sound-options button { height: 56px; padding: 0; border: 1px solid #e0dcd3; border-radius: 3px; background: transparent; color: #7f7b74; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 7px; font-size: 9px; }
@@ -118,6 +144,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid rgba(224,100,75,.
 .sound-digital { background: repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 4px); border: 0; }
 .sound-soft { width: 20px; border: 0; border-radius: 50%; background: radial-gradient(ellipse,currentColor 0 20%,transparent 25% 40%,currentColor 45% 50%,transparent 55%); opacity: .75; }
 .metronome-action { width: 100%; height: 46px; margin-top: 23px; border: 1px solid #d8d3ca; color: #65625c; background: transparent; }
+.metronome-action + .setting-group { margin-top: 18px; }
 .metronome-action:hover:not(:disabled) { background: #efebe4; }
 .metronome-action.active { border-color: rgba(224,100,75,.5); color: var(--coral-dark); }
 .metronome-action:disabled { color: var(--green); border-color: rgba(49,95,83,.22); background: rgba(49,95,83,.045); cursor: default; }
@@ -205,6 +232,7 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .panel.mobile-panel-hidden { display: none; }
   .panel-heading > div:first-child { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .panel-heading h2 { font-size: 20px; }
+  .metronome-header-controls { width: 100%; margin-left: 0; justify-content: space-between; }
   .status-pill { padding: 7px 9px; font-size: 10px; }
   .timer-clock { width: min(190px, 58vw); height: min(190px, 58vw); margin: 8px auto 8px; }
   .progress-ring { transform: rotate(-90deg); }
@@ -228,6 +256,7 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .beat-indicator { height: 40px; gap: clamp(10px, 5vw, 20px); margin: 11px 0 8px; padding: 0 8px; }
   .beat-indicator span { width: 25px; height: 25px; }
   .setting-group { align-items: center; gap: 10px; margin-top: 8px; }
+  .metronome-action + .setting-group { margin-top: 10px; }
   .setting-group .setting-label { white-space: normal; font-size: 9px; letter-spacing: .15em; }
   .segmented-control { flex: 0 0 auto; }
   .segmented-control button { width: 45px; height: 36px; }
@@ -253,6 +282,7 @@ footer { padding: 0 24px 34px; color: #aaa69e; text-align: center; font-size: 8p
   .tempo-control { margin-top: 6px; }
   .beat-indicator { margin: 8px 0 5px; }
   .setting-group { margin-top: 5px; }
+  .metronome-action + .setting-group { margin-top: 12px; }
   .sound-group { margin-top: 7px; }
   .sound-options button { height: 38px; }
   .metronome-action { height: 38px; min-height: 38px; margin-top: 7px; }

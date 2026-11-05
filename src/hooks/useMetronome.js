@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { SOUND_PRESETS } from '../config/metronome.js'
+import { getRhythm, SOUND_PRESETS } from '../config/metronome.js'
 
 const LOOKAHEAD_MS = 25
 const SCHEDULE_AHEAD_SECONDS = 0.1
-const OUTPUT_BOOST = 4
 
-export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accentFirstBeat }) {
+export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, volume, accentFirstBeat }) {
   const audioContextRef = useRef(null)
   const masterGainRef = useRef(null)
   const workletNodeRef = useRef(null)
   const workletFailedRef = useRef(false)
   const timerAlarmRef = useRef(null)
   const playingRef = useRef(playing)
-  const settingsRef = useRef({ bpm, beatsPerBar, soundId, volume, accentFirstBeat })
+  const settingsRef = useRef({ bpm, beatsPerBar, rhythmId, soundId, volume, accentFirstBeat })
   const volumeRef = useRef(volume)
   const accentFirstBeatRef = useRef(accentFirstBeat)
   const nextNoteTimeRef = useRef(0)
@@ -26,11 +25,14 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
     if (!node) return
 
     const { bpm: currentBpm, beatsPerBar: currentBeatsPerBar, soundId: currentSoundId, volume: currentVolume, accentFirstBeat: currentAccentFirstBeat } = settingsRef.current
+    const rhythm = getRhythm(settingsRef.current.rhythmId)
     const preset = SOUND_PRESETS.find((item) => item.id === currentSoundId) ?? SOUND_PRESETS[0]
     node.port.postMessage({
       type: 'settings',
       bpm: currentBpm,
       beatsPerBar: currentBeatsPerBar,
+      rhythmBeats: rhythm.beats,
+      rhythmDivisions: rhythm.divisions,
       wave: preset.wave,
       frequency: preset.frequency,
       accent: preset.accent,
@@ -51,15 +53,9 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
       const AudioContext = window.AudioContext || window.webkitAudioContext
       audioContextRef.current = new AudioContext()
       masterGainRef.current = audioContextRef.current.createGain()
-      masterGainRef.current.gain.value = (volumeRef.current / 100) * OUTPUT_BOOST
-      const compressor = audioContextRef.current.createDynamicsCompressor()
-      compressor.threshold.value = -1
-      compressor.knee.value = 0
-      compressor.ratio.value = 20
-      compressor.attack.value = 0.001
-      compressor.release.value = 0.1
-      masterGainRef.current.connect(compressor)
-      compressor.connect(audioContextRef.current.destination)
+      // Ganancia unitaria al 100 %: sin refuerzo ni compresión dinámica.
+      masterGainRef.current.gain.value = volumeRef.current / 100
+      masterGainRef.current.connect(audioContextRef.current.destination)
 
       if (audioContextRef.current.audioWorklet && window.AudioWorkletNode) {
         setBackgroundAudioAvailable(true)
@@ -87,13 +83,13 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
   useEffect(() => {
     volumeRef.current = volume
     accentFirstBeatRef.current = accentFirstBeat
-    settingsRef.current = { bpm, beatsPerBar, soundId, volume, accentFirstBeat }
+    settingsRef.current = { bpm, beatsPerBar, rhythmId, soundId, volume, accentFirstBeat }
     const context = audioContextRef.current
     if (context && masterGainRef.current) {
-      masterGainRef.current.gain.setTargetAtTime((volume / 100) * OUTPUT_BOOST, context.currentTime, 0.015)
+      masterGainRef.current.gain.setTargetAtTime(volume / 100, context.currentTime, 0.015)
     }
     syncWorklet()
-  }, [accentFirstBeat, beatsPerBar, bpm, soundId, syncWorklet, volume])
+  }, [accentFirstBeat, beatsPerBar, bpm, rhythmId, soundId, syncWorklet, volume])
 
   useEffect(() => {
     playingRef.current = playing
@@ -154,8 +150,14 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
     nextNoteTimeRef.current = context.currentTime + 0.05
     nextBeatRef.current = 0
 
-    const schedulePulse = (beat, time) => {
-      const isAccent = accentFirstBeatRef.current && beat === 0
+    const rhythm = getRhythm(rhythmId)
+    let nextPulseTime = nextNoteTimeRef.current
+    let pulseIndex = 0
+    const pulsesPerBar = Math.ceil(beatsPerBar * rhythm.divisions / rhythm.beats)
+    const pulseStep = rhythm.beats / rhythm.divisions
+
+    const schedulePulse = (index, time) => {
+      const isAccent = accentFirstBeatRef.current && index % pulsesPerBar === 0
       const oscillator = context.createOscillator()
       const gain = context.createGain()
       oscillator.type = preset.wave
@@ -167,24 +169,26 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
       oscillator.start(time)
       oscillator.stop(time + preset.duration)
 
-      const visualDelay = Math.max(0, (time - context.currentTime) * 1000)
-      const timer = window.setTimeout(() => setCurrentBeat(beat), visualDelay)
-      visualTimersRef.current.push(timer)
     }
 
     const scheduler = () => {
       if (nextNoteTimeRef.current < context.currentTime - SCHEDULE_AHEAD_SECONDS) {
         nextNoteTimeRef.current = context.currentTime + 0.05
         nextBeatRef.current = 0
+        nextPulseTime = nextNoteTimeRef.current
+        pulseIndex = 0
+      }
+      while (nextPulseTime < context.currentTime + SCHEDULE_AHEAD_SECONDS) {
+        if (!workletNodeRef.current && workletFailedRef.current) schedulePulse(pulseIndex, nextPulseTime)
+        const remainingBeats = beatsPerBar - (pulseIndex % pulsesPerBar) * pulseStep
+        nextPulseTime += (60 / bpm) * Math.min(pulseStep, remainingBeats)
+        pulseIndex += 1
       }
       while (nextNoteTimeRef.current < context.currentTime + SCHEDULE_AHEAD_SECONDS) {
-        if (!workletNodeRef.current && workletFailedRef.current) schedulePulse(nextBeatRef.current, nextNoteTimeRef.current)
-        else {
-          const visualDelay = Math.max(0, (nextNoteTimeRef.current - context.currentTime) * 1000)
-          const beat = nextBeatRef.current
-          const timer = window.setTimeout(() => setCurrentBeat(beat), visualDelay)
-          visualTimersRef.current.push(timer)
-        }
+        const visualDelay = Math.max(0, (nextNoteTimeRef.current - context.currentTime) * 1000)
+        const beat = nextBeatRef.current
+        const timer = window.setTimeout(() => setCurrentBeat(beat), visualDelay)
+        visualTimersRef.current.push(timer)
         nextNoteTimeRef.current += 60 / bpm
         nextBeatRef.current = (nextBeatRef.current + 1) % beatsPerBar
       }
@@ -198,7 +202,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, soundId, volume, accen
       visualTimersRef.current.forEach(window.clearTimeout)
       visualTimersRef.current = []
     }
-  }, [backgroundAudioAvailable, beatsPerBar, bpm, playing, prepareAudio, soundId])
+  }, [backgroundAudioAvailable, beatsPerBar, bpm, playing, prepareAudio, rhythmId, soundId])
 
   return { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable }
 }

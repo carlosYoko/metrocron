@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { BPM_MAX, BPM_MIN, SOUND_PRESETS, TIME_SIGNATURES } from '../config/metronome.js'
+import { BPM_MAX, BPM_MIN, RHYTHMS, TIME_SIGNATURES } from '../config/metronome.js'
 import { PauseIcon, PlayIcon, VolumeIcon, VolumeMutedIcon } from './Icons.jsx'
+import { RhythmIcon } from './RhythmIcon.jsx'
 
-export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBeatsPerBar, soundId, setSoundId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle, screenWakeLockStatus }) {
+export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBeatsPerBar, rhythmId, setRhythmId, volume, setVolume, accentFirstBeat, setAccentFirstBeat, playing, synced, currentBeat, onToggle, screenWakeLockStatus }) {
   const [isVolumeOpen, setIsVolumeOpen] = useState(false)
   const volumeControlRef = useRef(null)
   const volumeButtonRef = useRef(null)
@@ -36,6 +37,17 @@ export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBe
           <span className="eyebrow">RITMO</span>
           <h2 id="metronome-title">Metrónomo</h2>
         </div>
+        <div className="metronome-header-controls">
+          <button
+            className={`accent-button ${accentFirstBeat ? 'selected' : ''}`}
+            type="button"
+            aria-pressed={accentFirstBeat}
+            aria-label="Acentuar el primer pulso del compás"
+            title={accentFirstBeat ? 'Acento del primer pulso activado' : 'Acento del primer pulso desactivado'}
+            onClick={() => setAccentFirstBeat((isEnabled) => !isEnabled)}
+          >
+            Acento
+          </button>
         <div className={`volume-control ${isVolumeOpen ? 'is-open' : ''}`} ref={volumeControlRef}>
           <button
             ref={volumeButtonRef}
@@ -64,6 +76,7 @@ export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBe
               style={{ '--volume-progress': `${volume}%` }}
             />
           </div>}
+        </div>
         </div>
       </div>
 
@@ -107,6 +120,11 @@ export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBe
         ))}
       </div>
 
+      <button className={`metronome-action ${playing ? 'active' : ''}`} onClick={onToggle} disabled={synced}>
+        {playing ? <PauseIcon /> : <PlayIcon />}
+        {synced ? 'Sincronizado con la sesión' : playing ? 'Detener metrónomo' : 'Usar sin temporizador'}
+      </button>
+
       <div className="setting-group">
         <span className="setting-label">COMPÁS</span>
         <div className="segmented-control">
@@ -116,38 +134,31 @@ export function MetronomePanel({ className = '', bpm, setBpm, beatsPerBar, setBe
         </div>
       </div>
 
-      <div className="setting-group accent-setting">
-        <span className="setting-label">ACENTUAR PRIMER PULSO</span>
-        <div className="accent-control">
-          <span>{accentFirstBeat ? 'Sí' : 'No'}</span>
-          <button
-            className={`toggle-switch ${accentFirstBeat ? 'selected' : ''}`}
-            type="button"
-            role="switch"
-            aria-checked={accentFirstBeat}
-            aria-label="Acentuar el primer pulso del compás"
-            onClick={() => setAccentFirstBeat((isEnabled) => !isEnabled)}
-          >
-            <span />
-          </button>
+      <div className="rhythm-setting">
+        <span className="setting-label" id="rhythm-label">FIGURA RÍTMICA</span>
+        <div className="rhythm-options" role="group" aria-labelledby="rhythm-label">
+          {RHYTHMS.map((rhythm) => {
+            const duration = rhythm.divisions === 1 ? `${rhythm.beats}` : `1/${rhythm.divisions}`
+            const durationLabel = `${duration} ${rhythm.beats === 1 ? 'tiempo' : 'tiempos'}`
+            return (
+              <button
+                key={rhythm.id}
+                type="button"
+                className={rhythmId === rhythm.id ? 'selected' : ''}
+                aria-pressed={rhythmId === rhythm.id}
+                aria-label={`${rhythm.label}, ${durationLabel}`}
+                onClick={() => setRhythmId(rhythm.id)}
+              >
+                <RhythmIcon rhythmId={rhythm.id} />
+                <span className="rhythm-name">{rhythm.label}</span>
+                <span className="rhythm-duration">{durationLabel}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      <div className="setting-group sound-group">
-        <span className="setting-label">SONIDO DEL PULSO</span>
-        <div className="sound-options">
-          {SOUND_PRESETS.map((sound) => (
-            <button key={sound.id} className={soundId === sound.id ? 'selected' : ''} onClick={() => setSoundId(sound.id)}>
-              <span className={`sound-mark sound-${sound.id}`} />{sound.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      <button className={`metronome-action ${playing ? 'active' : ''}`} onClick={onToggle} disabled={synced}>
-        {playing ? <PauseIcon /> : <PlayIcon />}
-        {synced ? 'Sincronizado con la sesión' : playing ? 'Detener metrónomo' : 'Usar sin temporizador'}
-      </button>
       {playing && screenWakeLockStatus !== 'idle' && (
         <p className={`screen-wake-lock-status screen-wake-lock-${screenWakeLockStatus}`} role="status">
           {screenWakeLockStatus === 'active'

@@ -10,7 +10,9 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
     this.pulseVolume = 0.34
     this.accentFirstBeat = true
     this.playing = false
-    this.beat = 0
+    this.pulseIndex = 0
+    this.rhythmBeats = 1
+    this.rhythmDivisions = 1
     this.nextBeatFrame = currentFrame
     this.pulse = null
     this.timerAlarmFrame = null
@@ -19,6 +21,9 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
     this.port.onmessage = ({ data }) => {
       if (data.type === 'settings') {
         const wasPlaying = this.playing
+        const timingChanged = this.bpm !== data.bpm || this.beatsPerBar !== data.beatsPerBar || this.rhythmBeats !== data.rhythmBeats || this.rhythmDivisions !== data.rhythmDivisions
+        this.rhythmBeats = data.rhythmBeats
+        this.rhythmDivisions = data.rhythmDivisions
         this.bpm = data.bpm
         this.beatsPerBar = data.beatsPerBar
         this.wave = data.wave
@@ -28,9 +33,9 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
         this.pulseVolume = data.pulseVolume
         this.accentFirstBeat = data.accentFirstBeat
         this.playing = data.playing
-        if (this.playing && !wasPlaying) {
-          this.beat = 0
-          this.nextBeatFrame = currentFrame
+        if (this.playing && (!wasPlaying || timingChanged)) {
+          this.pulseIndex = 0
+          this.nextBeatFrame = currentFrame + 0.05 * sampleRate
         }
       } else if (data.type === 'schedule-alarm') {
         this.timerAlarmFrame = currentFrame + Math.max(0, data.seconds) * sampleRate
@@ -61,14 +66,19 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
       }
 
       if (this.playing && frame >= this.nextBeatFrame) {
-        const isAccent = this.accentFirstBeat && this.beat === 0
+        const pulsesPerBar = Math.ceil(this.beatsPerBar * this.rhythmDivisions / this.rhythmBeats)
+        const pulseInBar = this.pulseIndex % pulsesPerBar
+        const isAccent = this.accentFirstBeat && pulseInBar === 0
         this.pulse = {
           start: frame,
           frequency: isAccent ? this.accent : this.frequency,
           volume: this.pulseVolume * (isAccent ? 1 : 0.72),
         }
-        this.beat = (this.beat + 1) % this.beatsPerBar
-        this.nextBeatFrame += sampleRate * (60 / this.bpm)
+        this.pulseIndex += 1
+        // El último intervalo se limita al final del compás.
+        const step = this.rhythmBeats / this.rhythmDivisions
+        const remainingBeats = this.beatsPerBar - pulseInBar * step
+        this.nextBeatFrame += sampleRate * (60 / this.bpm) * Math.min(step, remainingBeats)
       }
 
       if (this.pulse) {
