@@ -1,9 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
+import { APP_VERSION, refreshApplication } from '../config/app.js'
 import { SOUND_PRESETS } from '../config/metronome.js'
 import { ThemeSwitcher } from './ThemeSwitcher.jsx'
 
-export function SettingsMenu({ themePreference, onThemeChange, soundId, onSoundChange }) {
+export function SettingsMenu({ themePreference, onThemeChange, soundId, onSoundChange, audioEngine, playing }) {
   const [open, setOpen] = useState(false)
+  const [updating, setUpdating] = useState(false)
+  const [updateError, setUpdateError] = useState('')
+
+  const refresh = async () => {
+    setUpdating(true)
+    setUpdateError('')
+    try {
+      await refreshApplication()
+    } catch {
+      setUpdateError('No se pudo actualizar. Comprueba tu conexión y vuelve a intentarlo.')
+      setUpdating(false)
+    }
+  }
   const containerRef = useRef(null)
   const triggerRef = useRef(null)
   const panelRef = useRef(null)
@@ -65,6 +79,15 @@ export function SettingsMenu({ themePreference, onThemeChange, soundId, onSoundC
                 </button>
               ))}
             </div>
+          </div>
+          <div className="settings-section app-diagnostics">
+            <span className="setting-label">APLICACIÓN · {APP_VERSION}</span>
+            <p>Motor: {audioEngine}</p>
+            <button type="button" className="refresh-app-button" disabled={updating || playing} onClick={refresh}>
+              {updating ? 'Actualizando…' : 'Renovar archivos de la aplicación'}
+            </button>
+            <p>{playing ? 'Detén la reproducción antes de actualizar.' : 'Requiere conexión. Conserva tus ajustes y recarga la aplicación.'}</p>
+            {updateError && <p role="alert">{updateError}</p>}
           </div>
         </div>
       )}

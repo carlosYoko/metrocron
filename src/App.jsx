@@ -19,7 +19,7 @@ export default function App() {
   const [activeMobilePanel, setActiveMobilePanel] = useState(settings.activePanel)
   const metronomePlaying = (timer.isRunning && timerMetronomeEnabled) || standalonePlaying
   const screenWakeLockStatus = useScreenWakeLock(metronomePlaying)
-  const { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, rhythmId, soundId, volume, accentFirstBeat })
+  const { audioEngine, currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable } = useMetronome({ playing: metronomePlaying, bpm, beatsPerBar, rhythmId, soundId, volume, accentFirstBeat })
   const completionNotifiedRef = useRef(false)
 
   useEffect(() => {
@@ -70,6 +70,8 @@ export default function App() {
         </a>
         <div className="header-actions">
           <SettingsMenu
+            audioEngine={audioEngine}
+            playing={metronomePlaying || timer.isRunning}
             themePreference={theme.preference}
             onThemeChange={theme.setPreference}
             soundId={soundId}

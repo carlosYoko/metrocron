@@ -9,7 +9,7 @@ const source = readFileSync(new URL('../audio/metronome-processor.js', import.me
 function createProcessor() {
   let Processor
   const context = vm.createContext({
-    AudioWorkletProcessor: class { port = { onmessage: null } },
+    AudioWorkletProcessor: class { port = { onmessage: null, postMessage: () => {} } },
     currentFrame: 0,
     sampleRate: 8000,
     registerProcessor: (_name, implementation) => { Processor = implementation },

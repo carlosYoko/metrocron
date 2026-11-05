@@ -45,9 +45,9 @@ test('La instalación renueva el shell y precarga el bundle que incluye el audio
 test('La activación elimina la caché antigua del procesador', async () => {
   const deleted = []
   const handlers = loadWorker({
-    keys: async () => ['metrocron-v1', 'metrocron-v2', 'other-app'],
+    keys: async () => ['metrocron-v1', 'metrocron-v2', 'metrocron-v3', 'other-app'],
     delete: async (name) => { deleted.push(name) },
   })
   await run(handlers.activate)
-  assert.deepEqual(deleted, ['metrocron-v1'])
+  assert.deepEqual(deleted, ['metrocron-v1', 'metrocron-v2'])
 })

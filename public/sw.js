@@ -1,4 +1,4 @@
-const CACHE_NAME = 'metrocron-v2'
+const CACHE_NAME = 'metrocron-v3'
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
@@ -41,7 +41,7 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET' || url.origin !== self.location.origin) return
 
   if (request.mode === 'navigate') {
-    const networkResponse = fetch(request).then(async (response) => {
+    const networkResponse = fetch(request, { cache: 'no-store' }).then(async (response) => {
       if (response.ok) {
         const cache = await caches.open(CACHE_NAME)
         await cache.put('/', response.clone())

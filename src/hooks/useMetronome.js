@@ -20,6 +20,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
   const visualTimersRef = useRef([])
   const [currentBeat, setCurrentBeat] = useState(-1)
   const [backgroundAudioAvailable, setBackgroundAudioAvailable] = useState(false)
+  const [audioEngine, setAudioEngine] = useState('Sin iniciar')
 
   const syncWorklet = useCallback(() => {
     const node = workletNodeRef.current
@@ -59,7 +60,7 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
       masterGainRef.current.connect(audioContextRef.current.destination)
 
       if (audioContextRef.current.audioWorklet && window.AudioWorkletNode) {
-        setBackgroundAudioAvailable(true)
+        setAudioEngine('Iniciando AudioWorklet…')
         // El procesador se incluye en el bundle para que la PWA no cargue
         // una versión antigua del motor junto a una interfaz nueva.
         const processorUrl = URL.createObjectURL(new Blob([processorSource], { type: 'text/javascript' }))
@@ -68,16 +69,24 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
           .then(() => {
             const node = new AudioWorkletNode(audioContextRef.current, 'metrocron-audio')
             node.connect(masterGainRef.current)
+            node.port.onmessage = ({ data }) => {
+              if (data.type === 'settings-applied') {
+                setAudioEngine(`AudioWorklet · ${data.rhythmBeats}/${data.rhythmDivisions} negras por clic`)
+              }
+            }
             workletNodeRef.current = node
+            setBackgroundAudioAvailable(true)
             syncWorklet()
           })
           .catch((error) => {
             workletFailedRef.current = true
+            setAudioEngine('Web Audio estándar (falló AudioWorklet)')
             setBackgroundAudioAvailable(false)
             console.error('No se pudo iniciar el audio en segundo plano.', error)
           })
           .finally(() => URL.revokeObjectURL(processorUrl))
       } else {
+        setAudioEngine('Web Audio estándar (sin AudioWorklet)')
         workletFailedRef.current = true
       }
     }
@@ -209,5 +218,5 @@ export function useMetronome({ playing, bpm, beatsPerBar, rhythmId, soundId, vol
     }
   }, [backgroundAudioAvailable, beatsPerBar, bpm, playing, prepareAudio, rhythmId, soundId])
 
-  return { currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable }
+  return { audioEngine, currentBeat, prepareAudio, playCompletionAlarm, scheduleTimerAlarm, cancelTimerAlarm, backgroundAudioAvailable }
 }

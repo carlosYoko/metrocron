@@ -37,6 +37,7 @@ class MetrocronAudioProcessor extends AudioWorkletProcessor {
           this.pulseIndex = 0
           this.nextBeatFrame = currentFrame + 0.05 * sampleRate
         }
+        this.port.postMessage({ type: 'settings-applied', rhythmBeats: this.rhythmBeats, rhythmDivisions: this.rhythmDivisions })
       } else if (data.type === 'schedule-alarm') {
         this.timerAlarmFrame = currentFrame + Math.max(0, data.seconds) * sampleRate
       } else if (data.type === 'cancel-alarm') {
